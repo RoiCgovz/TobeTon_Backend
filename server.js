@@ -13,6 +13,11 @@ require("./db/database");
 const userRoutes = require("./routes/users");
 app.use("/users", userRoutes);
 
+const authRoutes = require("./routes/auth");
+app.use("/auth", authRoutes);
+
+
+
 app.get("/" , (req, res) => {
     res.send("API running...");
 });
