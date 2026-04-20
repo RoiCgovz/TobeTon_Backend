@@ -9,14 +9,18 @@ app.use(cors());
 app.use(express.json());
 
 require("./db/database");
+
+const authRoutes = require("./routes/auth");
+app.use("/auth", authRoutes);
  
 const userRoutes = require("./routes/users");
 app.use("/users", userRoutes);
 
-const authRoutes = require("./routes/auth");
-app.use("/auth", authRoutes);
+const folderRoutes = require("./routes/folder")
+app.use("/folders", folderRoutes);
 
-
+const cardsRoutes = require("./routes/cards");
+app.use("/cards", cardsRoutes);
 
 app.get("/" , (req, res) => {
     res.send("API running...");
