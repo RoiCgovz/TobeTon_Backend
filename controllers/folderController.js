@@ -1,4 +1,5 @@
 const db = require("../db/database");
+const { checkFolderAchievements } = require("./achievementController");
 
 // GET all folders (with card count)
 exports.getAllFolders = (req, res) => {
@@ -37,8 +38,10 @@ exports.createFolder = (req, res) => {
     `INSERT INTO folders (user_id, folder_category, folder_name)
      VALUES (?, ?, ?)`,
     [user_id, folder_category, folder_name],
-    function (err) {
+    async function (err) {
       if (err) return res.status(500).json(err);
+
+      await checkFolderAchievements(user_id);
 
       res.json({
         id: this.lastID,
