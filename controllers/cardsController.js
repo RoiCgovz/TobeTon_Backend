@@ -11,6 +11,7 @@ exports.getCardsByFolder = (req, res) => {
     [folder_id, user_id],
     (err, rows) => {
       if (err) return res.status(500).json(err);
+
       res.json(rows);
     }
   );
@@ -18,11 +19,19 @@ exports.getCardsByFolder = (req, res) => {
 
 // CREATE card
 exports.createCard = (req, res) => {
-  const { folder_id, card_name, question, answer } = req.body;
+  const {
+    folder_id,
+    card_name,
+    question,
+    answer
+  } = req.body;
+
   const user_id = req.user.id;
 
   if (!folder_id || !question || !answer) {
-    return res.status(400).json({ error: "Missing fields" });
+    return res.status(400).json({
+      error: "Missing fields"
+    });
   }
 
   // Check ownership of folder
@@ -30,18 +39,35 @@ exports.createCard = (req, res) => {
     `SELECT * FROM folders WHERE id = ? AND user_id = ?`,
     [folder_id, user_id],
     (err, folder) => {
-      if (err) return res.status(500).json(err);
+
+      if (err) {
+        return res.status(500).json(err);
+      }
 
       if (!folder) {
-        return res.status(403).json({ error: "Unauthorized folder" });
+        return res.status(403).json({
+          error: "Unauthorized folder"
+        });
       }
 
       db.run(
-        `INSERT INTO cards (folder_id, user_id, card_name, question, answer)
-         VALUES (?, ?, ?, ?, ?)`,
-        [folder_id, user_id, card_name, question, answer],
+        `
+        INSERT INTO cards
+        (folder_id, user_id, card_name, question, answer)
+        VALUES (?, ?, ?, ?, ?)
+        `,
+        [
+          folder_id,
+          user_id,
+          card_name,
+          question,
+          answer
+        ],
         function (err) {
-          if (err) return res.status(500).json(err);
+
+          if (err) {
+            return res.status(500).json(err);
+          }
 
           res.json({
             id: this.lastID,
@@ -56,6 +82,65 @@ exports.createCard = (req, res) => {
   );
 };
 
+// UPDATE card
+exports.updateCard = (req, res) => {
+  const { id } = req.params;
+
+  const {
+    card_name,
+    question,
+    answer
+  } = req.body;
+
+  const user_id = req.user.id;
+
+  if (!question || !answer) {
+    return res.status(400).json({
+      error: "Missing fields"
+    });
+  }
+
+  db.run(
+    `
+    UPDATE cards
+    SET
+      card_name = ?,
+      question = ?,
+      answer = ?
+    WHERE id = ? AND user_id = ?
+    `,
+    [
+      card_name,
+      question,
+      answer,
+      id,
+      user_id
+    ],
+    function (err) {
+
+      if (err) {
+        return res.status(500).json(err);
+      }
+
+      if (this.changes === 0) {
+        return res.status(403).json({
+          error: "Unauthorized or card not found"
+        });
+      }
+
+      res.json({
+        message: "Card updated successfully",
+        updatedCard: {
+          id,
+          card_name,
+          question,
+          answer
+        }
+      });
+    }
+  );
+};
+
 // DELETE card
 exports.deleteCard = (req, res) => {
   const { id } = req.params;
@@ -65,13 +150,20 @@ exports.deleteCard = (req, res) => {
     `DELETE FROM cards WHERE id = ? AND user_id = ?`,
     [id, user_id],
     function (err) {
-      if (err) return res.status(500).json(err);
 
-      if (this.changes === 0) {
-        return res.status(403).json({ error: "Unauthorized" });
+      if (err) {
+        return res.status(500).json(err);
       }
 
-      res.json({ message: "Card deleted" });
+      if (this.changes === 0) {
+        return res.status(403).json({
+          error: "Unauthorized"
+        });
+      }
+
+      res.json({
+        message: "Card deleted"
+      });
     }
   );
 };

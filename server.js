@@ -25,6 +25,9 @@ app.use("/cards", cardsRoutes);
 const achievementRoutes = require("./routes/achievement");
 app.use("/achievements", achievementRoutes);
 
+const statisticsRoutes = require("./routes/statisticsRoutes");
+app.use("/statistics", statisticsRoutes);
+
 app.get("/", (req, res) => {
   res.send("API running...");
 });
