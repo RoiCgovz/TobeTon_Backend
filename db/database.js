@@ -70,6 +70,29 @@ db.serialize(() => {
     )
   `);
 
+  // Statistics Table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS statistics (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+      user_id INTEGER UNIQUE NOT NULL,
+
+      average_score_percent REAL DEFAULT 0,
+
+      total_quiz_score_percent REAL DEFAULT 0,
+      total_quizzes_taken INTEGER DEFAULT 0,
+
+      total_app_usage_seconds INTEGER DEFAULT 0,
+
+      total_flashcard_study_seconds INTEGER DEFAULT 0,
+
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
   // Sample Users
   db.get("SELECT COUNT(*) as count FROM users", (err, row) => {
     if (row.count === 0) {
@@ -78,6 +101,12 @@ db.serialize(() => {
         VALUES 
         ('sixseven', '67676767'),
         ('nineeleven', '911911')
+      `);
+
+      // Create statistics rows for sample users
+      db.run(`
+        INSERT INTO statistics (user_id)
+        SELECT id FROM users
       `);
     }
   });
