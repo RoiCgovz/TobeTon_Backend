@@ -5,12 +5,15 @@ const authenticateToken = require("../middleware/authMiddleware");
 const folderController = require("../controllers/folderController");
 
 // Get all folders
-router.get("/", authenticateToken, folderController.getAllFolders);
+router.get("/get", authenticateToken, folderController.getAllFolders);
 
 // Create folder
-router.post("/", authenticateToken, folderController.createFolder);
+router.post("/create", authenticateToken, folderController.createFolder);
 
 // Delete folder
 router.delete("/:id", authenticateToken, folderController.deleteFolder);
+
+// Update folder
+router.put("/:id", authenticateToken, folderController.updateFolder);
 
 module.exports = router;
