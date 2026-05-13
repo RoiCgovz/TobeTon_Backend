@@ -28,6 +28,13 @@ app.use("/achievements", achievementRoutes);
 const statisticsRoutes = require("./routes/statisticsRoutes");
 app.use("/statistics", statisticsRoutes);
 
+const flashcardsRoutes = require("./routes/flashcards");
+app.use("/flashcards", flashcardsRoutes);
+
+const quizRoutes = require("./routes/quiz");
+app.use("/quiz", quizRoutes);
+
+
 app.get("/", (req, res) => {
   res.send("API running...");
 });

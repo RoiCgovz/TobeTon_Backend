@@ -148,11 +148,7 @@ exports.login = (req, res) => {
 
 // UPDATE USERNAME
 exports.updateUsername = (req, res) => {
-
-  const {
-    userId,
-    newUsername
-  } = req.body || {};
+  const { userId, newUsername } = req.body || {};
 
   if (!newUsername) {
     return res.status(400).json({
@@ -169,15 +165,12 @@ exports.updateUsername = (req, res) => {
     [newUsername, userId],
 
     function(err) {
-
       if (err) {
-
         if (err.message.includes("UNIQUE")) {
           return res.status(400).json({
             error: "Username already exists"
           });
         }
-
         return res.status(500).json({
           error: "Database error"
         });
@@ -188,38 +181,24 @@ exports.updateUsername = (req, res) => {
           error: "User not found"
         });
       }
-
       res.json({
         message: "Username updated successfully"
       });
-
     }
   );
-
 };
-
 
 // UPDATE PASSWORD
 exports.updatePassword = async (req, res) => {
-
-  const {
-    userId,
-    currentPassword,
-    newPassword
-  } = req.body || {};
-
-  if (
-    !currentPassword ||
-    !newPassword
-  ) {
+  const { userId, currentPassword, newPassword } = req.body || {};
+  if ( !currentPassword || !newPassword ) {
     return res.status(400).json({
       error:
         "Current and new password required"
     });
   }
-
+  
   try {
-
     db.get(
       `
       SELECT *
@@ -227,34 +206,28 @@ exports.updatePassword = async (req, res) => {
       WHERE id = ?
       `,
       [userId],
-
       async (err, user) => {
-
         if (err) {
           return res.status(500).json({
             error: "Database error"
           });
         }
-
         if (!user) {
           return res.status(404).json({
             error: "User not found"
           });
         }
-
         const isMatch =
           await bcrypt.compare(
             currentPassword,
             user.password
           );
-
         if (!isMatch) {
           return res.status(400).json({
             error:
               "Current password incorrect"
           });
         }
-
         const hashedPassword =
           await bcrypt.hash(
             newPassword,
@@ -281,10 +254,8 @@ exports.updatePassword = async (req, res) => {
               message:
                 "Password updated successfully"
             });
-
           }
         );
-
       }
     );
   }
