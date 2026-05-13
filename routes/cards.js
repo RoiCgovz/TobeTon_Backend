@@ -13,7 +13,7 @@ router.get(
 
 // Create card
 router.post(
-  "/",
+  "/create",
   authenticateToken,
   cardController.createCard
 );
@@ -23,6 +23,13 @@ router.delete(
   "/:id",
   authenticateToken,
   cardController.deleteCard
+);
+
+// Update card
+router.put(
+  "/:id",
+  authenticateToken,
+  cardController.updateCard
 );
 
 module.exports = router;
